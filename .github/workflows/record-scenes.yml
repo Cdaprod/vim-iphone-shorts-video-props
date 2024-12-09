@@ -1,0 +1,60 @@
+name: Record Vim Scenes
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  record-scenes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Setup Neovim
+        run: |
+          curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz
+          tar xzf nvim-linux64.tar.gz
+          sudo mv nvim-linux64/bin/nvim /usr/local/bin/
+          mkdir -p ~/.config/nvim
+          cp init.lua ~/.config/nvim/
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y asciinema tmux
+          pip install pyvirtualdisplay
+          sudo apt-get install -y xvfb
+          pip install asciinema-automation
+
+      - name: Create Recording Directory
+        run: mkdir -p asciinema
+
+      - name: Record Scene 1 - Setup
+        run: python .github/scripts/record_scene.py 1
+
+      - name: Record Scene 2 - Navigation
+        run: python .github/scripts/record_scene.py 2
+
+      - name: Record Scene 3 - LSP
+        run: python .github/scripts/record_scene.py 3
+
+      - name: Record Scene 4 - Docker
+        run: python .github/scripts/record_scene.py 4
+
+      - name: Record Scene 5 - Debug
+        run: python .github/scripts/record_scene.py 5
+
+      - name: Commit Recordings
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add asciinema/
+          git commit -m "Auto-record terminal sessions [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

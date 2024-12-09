@@ -1,0 +1,16 @@
+{
+  “theme”: “tokyo-night”,
+  “title”: “Vim iPhone Shorts”,
+  “author”: “CDAProd”,
+  “cols”: 80,
+  “rows”: 173,
+  “command”: “/usr/local/bin/nvim”,
+  “env”: {
+    “TERM”: “xterm-256color”
+  },
+  “stdout”: [
+    {
+      “delay”: 0.5
+    }
+  ]
+}
